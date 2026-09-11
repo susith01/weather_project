@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # 1. FastAPI + ML Engine Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weatherguard-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://weatherguard:weatherguard_secure_pass@db:5432/weatherguard_db
+      - REDIS_URL=redis://queue:6379/0
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - db
+      - queue
+    restart: unless-stopped
+
+  # 2. PostgreSQL / Timescale Database
+  db:
+    image: postgres:15-alpine
+    container_name: weatherguard-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=weatherguard
+      - POSTGRES_PASSWORD=weatherguard_secure_pass
+      - POSTGRES_DB=weatherguard_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  # 3. Redis Message Queue for Scalable Async Ingestion (Slide 4)
+  queue:
+    image: redis:7-alpine
+    container_name: weatherguard-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

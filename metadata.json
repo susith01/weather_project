@@ -1,0 +1,6 @@
+{
+  "name": "WeatherGuard - AWS Anomaly Detection",
+  "description": "AI/ML-Based Intelligent Anomaly Detection for Automatic Weather Stations. Hybrid rule engine, Isolation Forest, Deep Autoencoders, and SHAP explainability.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
